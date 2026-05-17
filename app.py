@@ -1,102 +1,126 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import joblib
 
 # =========================
 # LOAD MODEL AND SCALER
 # =========================
 
-model = joblib.load('knn_model.pkl')
+model = joblib.load('logistic_model.pkl')
+
 scaler = joblib.load('scaler.pkl')
 
 # =========================
 # TITLE
 # =========================
 
-st.title("Medical Insurance Cost Prediction")
+st.title("Breast Cancer Prediction")
 
-st.write("Predict insurance charges using KNN Regression")
+st.write("Logistic Regression Classification Project")
 
 # =========================
 # USER INPUTS
 # =========================
 
-age = st.number_input(
-    "Enter Age",
-    min_value=1,
-    max_value=100,
-    value=25
-)
+radius_mean = st.number_input("Radius Mean", value=14.0)
 
-sex = st.selectbox(
-    "Select Gender",
-    ["Male", "Female"]
-)
+texture_mean = st.number_input("Texture Mean", value=20.0)
 
-bmi = st.number_input(
-    "Enter BMI",
-    min_value=10.0,
-    max_value=60.0,
-    value=25.0
-)
+perimeter_mean = st.number_input("Perimeter Mean", value=90.0)
 
-children = st.number_input(
-    "Number of Children",
-    min_value=0,
-    max_value=10,
-    value=0
-)
+area_mean = st.number_input("Area Mean", value=600.0)
 
-smoker = st.selectbox(
-    "Smoker",
-    ["Yes", "No"]
-)
+smoothness_mean = st.number_input("Smoothness Mean", value=0.1)
 
-region = st.selectbox(
-    "Region",
-    ["southwest", "southeast", "northwest", "northeast"]
-)
+compactness_mean = st.number_input("Compactness Mean", value=0.1)
 
-# =========================
-# ENCODING
-# =========================
+concavity_mean = st.number_input("Concavity Mean", value=0.1)
 
-# Male = 1, Female = 0
+concave_points_mean = st.number_input("Concave Points Mean", value=0.05)
 
-if sex == "Male":
-    sex = 1
-else:
-    sex = 0
+symmetry_mean = st.number_input("Symmetry Mean", value=0.2)
 
-# Yes = 1, No = 0
+fractal_dimension_mean = st.number_input("Fractal Dimension Mean", value=0.06)
 
-if smoker == "Yes":
-    smoker = 1
-else:
-    smoker = 0
+radius_se = st.number_input("Radius SE", value=0.5)
 
-# Region Encoding
+texture_se = st.number_input("Texture SE", value=1.0)
 
-region_dict = {
-    "northeast": 0,
-    "northwest": 1,
-    "southeast": 2,
-    "southwest": 3
-}
+perimeter_se = st.number_input("Perimeter SE", value=3.0)
 
-region = region_dict[region]
+area_se = st.number_input("Area SE", value=40.0)
+
+smoothness_se = st.number_input("Smoothness SE", value=0.005)
+
+compactness_se = st.number_input("Compactness SE", value=0.02)
+
+concavity_se = st.number_input("Concavity SE", value=0.03)
+
+concave_points_se = st.number_input("Concave Points SE", value=0.01)
+
+symmetry_se = st.number_input("Symmetry SE", value=0.02)
+
+fractal_dimension_se = st.number_input("Fractal Dimension SE", value=0.003)
+
+radius_worst = st.number_input("Radius Worst", value=16.0)
+
+texture_worst = st.number_input("Texture Worst", value=25.0)
+
+perimeter_worst = st.number_input("Perimeter Worst", value=100.0)
+
+area_worst = st.number_input("Area Worst", value=700.0)
+
+smoothness_worst = st.number_input("Smoothness Worst", value=0.14)
+
+compactness_worst = st.number_input("Compactness Worst", value=0.25)
+
+concavity_worst = st.number_input("Concavity Worst", value=0.3)
+
+concave_points_worst = st.number_input("Concave Points Worst", value=0.1)
+
+symmetry_worst = st.number_input("Symmetry Worst", value=0.3)
+
+fractal_dimension_worst = st.number_input("Fractal Dimension Worst", value=0.08)
 
 # =========================
 # PREDICTION BUTTON
 # =========================
 
-if st.button("Predict Insurance Cost"):
+if st.button("Predict"):
 
-    # Input data
-
-    input_data = np.array([
-        [age, sex, bmi, children, smoker, region]
-    ])
+    input_data = np.array([[
+        radius_mean,
+        texture_mean,
+        perimeter_mean,
+        area_mean,
+        smoothness_mean,
+        compactness_mean,
+        concavity_mean,
+        concave_points_mean,
+        symmetry_mean,
+        fractal_dimension_mean,
+        radius_se,
+        texture_se,
+        perimeter_se,
+        area_se,
+        smoothness_se,
+        compactness_se,
+        concavity_se,
+        concave_points_se,
+        symmetry_se,
+        fractal_dimension_se,
+        radius_worst,
+        texture_worst,
+        perimeter_worst,
+        area_worst,
+        smoothness_worst,
+        compactness_worst,
+        concavity_worst,
+        concave_points_worst,
+        symmetry_worst,
+        fractal_dimension_worst
+    ]])
 
     # Scaling
 
@@ -106,8 +130,9 @@ if st.button("Predict Insurance Cost"):
 
     prediction = model.predict(input_data)
 
-    # Display Result
+    # Output
 
-    st.success(
-        f"Predicted Insurance Cost: ${prediction[0]:.2f}"
-    )
+    if prediction[0] == 1:
+        st.error("Malignant Cancer Detected")
+    else:
+        st.success("Benign Cancer Detected")
